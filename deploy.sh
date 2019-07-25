@@ -2,11 +2,6 @@
 
 DIR=$(dirname $0)
 
-# Symlink everything from ./config folder to ~/.config
-# PATH_PAIRS=(
-#     "$DIR/config","/home/$USER/.config"
-#     "$DIR/home","/home/$USER","."
-# )
 # Source the path pairs to use while deploying
 source $DIR/pairs.sh
 
@@ -16,15 +11,6 @@ for paths in ${PATH_PAIRS[@]}; do
         ln -s "$src/$file" "$dest/$dot$file";
     done
 done
-
-# for CONF in $(ls $DIR/config); do
-#     ln -s "$DIR/config/$CONF" "/home/$USER/.config/$CONF";
-# done
-#
-# # Symlink all files in ./home to ~/
-# for CONF in $(ls $DIR/home); do
-#     ln -s "$DIR/home/$CONF" "/home/$USER/.$CONF";
-# done
 
 echo "Done!!!"
 echo " To check symlinks from home directory, Try running "
