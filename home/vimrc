@@ -402,3 +402,5 @@ set clipboard^=unnamed,unnamedplus
 " stop background color erase. For compatibility with kitty terminal 7May19
 let &t_ut=''
 
+" Stop vim from clearing clipboard while exiting.
+autocmd VimLeave * call system("xsel -ib", getreg('+'))
