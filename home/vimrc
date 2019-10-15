@@ -404,3 +404,5 @@ let &t_ut=''
 
 " Stop vim from clearing clipboard while exiting.
 autocmd VimLeave * call system("xsel -ib", getreg('+'))
+
+
