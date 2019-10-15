@@ -60,3 +60,19 @@ class my_edit(Command):
         # This is a generic tab-completion function that iterates through the
         # content of the current directory.
         return self._tab_directory_content()
+
+
+class nautilus(Command):
+    """:nautilus
+
+    open current directory in nautilus, it it exists.
+    """
+
+    def execute(self):
+        from ranger.ext.get_executables import get_executables
+        if 'nautilus' in get_executables():
+            self.fm.run('nautilus ' + self.fm.thisdir.path, flags='f')
+        elif 'xdg-open' in get_executables():
+            self.fm.run('xdg-open ' + self.fm.thisdir.path, flags='f')
+        else:
+            self.fm.notify("nautilus is not available.")
