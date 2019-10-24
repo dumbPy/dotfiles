@@ -1,0 +1,9 @@
+[submodule "home/vim/bundle/vim-airline"]
+	path = home/vim/bundle/vim-airline
+	url = https://github.com/vim-airline/vim-airline.git
+[submodule "home/vim/bundle/vim-searchant"]
+	path = home/vim/bundle/vim-searchant
+	url = https://github.com/timakro/vim-searchant.git
+[submodule "home/vim/pathogen-src"]
+	path = home/vim/pathogen-src
+	url = https://github.com/tpope/vim-pathogen.git
