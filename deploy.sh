@@ -14,7 +14,7 @@ done
 
 echo "Done!!!"
 echo " To check symlinks from home directory, Try running "
-echo "$ lsd -la --recursive --depth 2 | grep lrw | grep Dropbox"
+echo "$ ls -la --recursive | grep lrw | grep dotfiles"
 
 DIR=$PWD
-cd ~/ && lsd -la --recursive --depth 2 | grep lrw | grep Dropbox && cd $DIR
+cd ~/ && lsd -la --recursive | grep lrw | grep dotfiles && cd $DIR
