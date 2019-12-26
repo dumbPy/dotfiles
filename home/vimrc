@@ -163,7 +163,8 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
-
+" Selection colors. foreground and background colors
+hi Search term=reverse ctermfg=0 ctermbg=7 guifg=wheat guibg=peru
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -389,12 +390,17 @@ function! VisualSelection(direction, extra_filter) range
 endfunction
 
 "Adding searchant and other vim plugins with pathogens plugin manager.
-execute pathogen#infect()
+runtime! autoload/pathogen.vim
+if exists('*pathogen#infect')
+    call pathogen#infect()
+    call pathogen#helptags()
+endif 
+" execute pathogen#infect()
 syntax on
 filetype plugin indent on
 
 "Adding Tags
-set tags=/home/sufiyan/anaconda3/tags;,tags;
+" set tags=/home/sufiyan/anaconda3/tags;,tags;
 
 "Copy to System Clipboard and Vim buffer, both
 set clipboard^=unnamed,unnamedplus
@@ -405,4 +411,5 @@ let &t_ut=''
 " Stop vim from clearing clipboard while exiting.
 autocmd VimLeave * call system("xsel -ib", getreg('+'))
 
-
+" Underline the cursor line in insert mode
+autocmd InsertEnter,InsertLeave * set cul!
