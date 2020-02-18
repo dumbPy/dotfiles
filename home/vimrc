@@ -389,15 +389,21 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-"Adding searchant and other vim plugins with pathogens plugin manager.
-runtime! autoload/pathogen.vim
-if exists('*pathogen#infect')
-    call pathogen#infect()
-    call pathogen#helptags()
-endif 
-" execute pathogen#infect()
-syntax on
-filetype plugin indent on
+
+" Check if vundle exist and add plugins
+" Make sure you run :PluginInstall after changing/adding plugins
+filetype off                  " required
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
+    call vundle#begin()
+    Plugin 'VundleVim/Vundle.vim'
+    Plugin 'timakro/vim-searchant'
+    Plugin 'vim-airline/vim-airline'
+    Plugin 'preservim/nerdtree'
+    call vundle#end()
+endif
+syntax on filetype plugin indent on
 
 "Adding Tags
 " set tags=/home/sufiyan/anaconda3/tags;,tags;
