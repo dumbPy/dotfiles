@@ -401,6 +401,7 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'timakro/vim-searchant'
     Plugin 'vim-airline/vim-airline'
     Plugin 'preservim/nerdtree'
+    Plugin 'cespare/vim-toml'
     call vundle#end()
 endif
 syntax on filetype plugin indent on
