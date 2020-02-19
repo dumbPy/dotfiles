@@ -1,6 +1,15 @@
-# deploy.sh
-Make sure you use absolute paths while running the script.
-It uses the path of the script to define symlinks!!
 
-# clean.sh
-Removes all the symlinks set by the deploy.sh
+# A desperate effort to maintain my dotfiles
+
+The dotfiles are deployed using [pydoit](https://github.com/pydoit/doit).  
+Checkout pydoit if you haven't yet...
+
+### zshfunc
+Functions for zshrc
+
+### home
+dotfiles that go into my home dir.
+
+### config
+dotfiles that go into `~/.config`
+
