@@ -3,8 +3,8 @@
 
 st_generate_epf(){
     # rates
-    local rate_basic=390.77 # basic rate per day
-    local rate_ot=97.69 # ot charges per hour
+    local rate_basic=404.23 # basic rate per day
+    local rate_ot=101.06 # ot charges per hour
 
 
     local days=$1
@@ -17,7 +17,7 @@ st_generate_epf(){
     echo $basic_n_hra
     local net_ot=$(calc "$rate_ot*$ot")
 
-    echo "100787538471#~#SANGANNA MALLAPA MAINAL#~#\
+    echo "101576210429#~#MANGESH RAGHUNATH LAD#~#\
 $(f2i $(calc "$basic_n_hra+$net_ot"))#~#\
 $(f2i $basic_n_hra)#~#$(f2i $basic_n_hra)#~#$(f2i $basic_n_hra)#~#\
 $(f2i $(calc "$basic_n_hra*0.12"))#~#\
