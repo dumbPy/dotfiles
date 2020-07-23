@@ -335,7 +335,7 @@ class open_with(Command):
     def execute(self):
         app, flags, mode = self._get_app_flags_mode(self.rest(1))
         self.fm.execute_file(
-            files=self._get_files(self.rest(1)),
+            files=[f for f in self.fm.thistab.get_selection()],
             app=app,
             flags=flags,
             mode=mode)
@@ -343,49 +343,10 @@ class open_with(Command):
     def tab(self, tabnum):
         return self._tab_through_executables()
 
-    def _get_files(self, string):
-        """Extracts the application, flags, mode and files from a string.
-        the files should be passed after `--` double dash. if no file is passed,
-        uses self.fm.thistab.get_selection(). supports regex to match file name
-        in the current directory
-        the `./` before filename or regex is optional except when wanting to open
-        current directory
-        Note: if no filename is provided after `--`, all files in current directory
-        will be returned
-
-        examples:
-        If file_A, file_B are in curent tab
-
-        "xdg-open f 1 -- ./" => [self.fm.thisdir]
-        "mplayer f 1 -- " => [self.fm.thisdir.files] # all files in cwd
-        "editor f 1 -- file_A" => [path_to_file_A]
-        "editor f 1 -- ./file_A" => [path_to_file_A]
-        "xdg-open f 1 -- ./file.*" => [path_to_file_A, path_to_file_B]
-        "vim f 1 -- ./.*_.*" => [path_to_file_A, path_to_file_B]
-        "mplayer f 1" => [self.fm.thistab.get_selection()]
-        "atool 4" => [self.fm.thistab.get_selection()]
-        "p" => [self.fm.thistab.get_selection()]
-        "" => [self.fm.thistab.get_selection()]
-        """
-        if not "--" in string:
-            return [self.fm.thistab.get_selection()]
-        else:
-            string = string.split("--")[-1].strip()
-            if string.startswith("./"):
-                if len(string) > 2:
-                    regex_str = string[2:]
-                else:
-                    return [self.fm.thisdir]
-            else:
-                regex_str = string
-            return [f for f in self.fm.thisdir.files
-                    if re.match(regex_str, os.path.basename(f))]
-
     def _get_app_flags_mode(self, string):  # pylint: disable=too-many-branches,too-many-statements
         """Extracts the application, flags and mode from a string.
 
         examples:
-        "xdg-open f 1 -- somefile" => ("xdg-open", "f", 1)
         "mplayer f 1" => ("mplayer", "f", 1)
         "atool 4" => ("atool", "", 4)
         "p" => ("", "p", 0)
@@ -395,8 +356,6 @@ class open_with(Command):
         app = ''
         flags = ''
         mode = 0
-        if '--' in string:
-            string = string.split('--')[0].strip()
         split = string.split()
 
         if len(split) == 1:
@@ -613,7 +572,7 @@ class default_linemode(Command):
 class quit(Command):  # pylint: disable=redefined-builtin
     """:quit
 
-    Closes the current tab, if there's more than one tab.
+    Closes the current tab, if there's only one tab.
     Otherwise quits if there are no tasks in progress.
     """
     def _exit_no_work(self):
@@ -632,7 +591,7 @@ class quit(Command):  # pylint: disable=redefined-builtin
 class quit_bang(Command):
     """:quit!
 
-    Closes the current tab, if there's more than one tab.
+    Closes the current tab, if there's only one tab.
     Otherwise force quits immediately.
     """
     name = 'quit!'
@@ -671,16 +630,6 @@ class quitall_bang(Command):
     def execute(self):
         self.fm.exit()
 
-
-class terminal(Command):
-    """:terminal
-
-    Spawns an "x-terminal-emulator" starting in the current directory.
-    """
-
-    def execute(self):
-        from ranger.ext.get_executables import get_term
-        self.fm.run(get_term(), flags='f')
 
 
 class delete(Command):
@@ -738,64 +687,6 @@ class delete(Command):
     def _question_callback(self, files, answer):
         if answer == 'y' or answer == 'Y':
             self.fm.delete(files)
-
-
-class trash(Command):
-    """:trash
-
-    Tries to move the selection or the files passed in arguments (if any) to
-    the trash, using rifle rules with label "trash".
-    The arguments use a shell-like escaping.
-
-    "Selection" is defined as all the "marked files" (by default, you
-    can mark files with space or v). If there are no marked files,
-    use the "current file" (where the cursor is)
-
-    When attempting to trash non-empty directories or multiple
-    marked files, it will require a confirmation.
-    """
-
-    allow_abbrev = False
-    escape_macros_for_shell = True
-
-    def execute(self):
-        import shlex
-        from functools import partial
-
-        def is_directory_with_files(path):
-            return os.path.isdir(path) and not os.path.islink(path) and len(os.listdir(path)) > 0
-
-        if self.rest(1):
-            files = shlex.split(self.rest(1))
-            many_files = (len(files) > 1 or is_directory_with_files(files[0]))
-        else:
-            cwd = self.fm.thisdir
-            tfile = self.fm.thisfile
-            if not cwd or not tfile:
-                self.fm.notify("Error: no file selected for deletion!", bad=True)
-                return
-
-            # relative_path used for a user-friendly output in the confirmation.
-            files = [f.relative_path for f in self.fm.thistab.get_selection()]
-            many_files = (cwd.marked_items or is_directory_with_files(tfile.path))
-
-        confirm = self.fm.settings.confirm_on_delete
-        if confirm != 'never' and (confirm != 'multiple' or many_files):
-            self.fm.ui.console.ask(
-                "Confirm deletion of: %s (y/N)" % ', '.join(files),
-                partial(self._question_callback, files),
-                ('n', 'N', 'y', 'Y'),
-            )
-        else:
-            # no need for a confirmation, just delete
-            self.fm.execute_file(files, label='trash')
-
-    def tab(self, tabnum):
-        return self._tab_directory_content()
-
-    def _question_callback(self, files, answer):
-        if answer == 'y' or answer == 'Y':
-            self.fm.execute_file(files, label='trash')
 
 
 class jump_non(Command):
@@ -1095,7 +986,7 @@ class rename_append(Command):
         relpath = tfile.relative_path.replace(MACRO_DELIMITER, MACRO_DELIMITER_ESC)
         basename = tfile.basename.replace(MACRO_DELIMITER, MACRO_DELIMITER_ESC)
 
-        if basename.find('.') <= 0 or os.path.isdir(relpath):
+        if basename.find('.') <= 0:
             self.fm.open_console('rename ' + relpath)
             return
 
@@ -1127,9 +1018,8 @@ class chmod(Command):
     def execute(self):
         mode_str = self.rest(1)
         if not mode_str:
-            if self.quantifier is None:
-                self.fm.notify("Syntax: chmod <octal number> "
-                               "or specify a quantifier", bad=True)
+            if not self.quantifier:
+                self.fm.notify("Syntax: chmod <octal number>", bad=True)
                 return
             mode_str = str(self.quantifier)
 
@@ -1163,8 +1053,7 @@ class bulkrename(Command):
     After you close it, it will be executed.
     """
 
-    def execute(self):
-        # pylint: disable=too-many-locals,too-many-statements,too-many-branches
+    def execute(self):  # pylint: disable=too-many-locals,too-many-statements
         import sys
         import tempfile
         from ranger.container.file import File
@@ -1193,23 +1082,11 @@ class bulkrename(Command):
         # Generate script
         cmdfile = tempfile.NamedTemporaryFile()
         script_lines = []
-        script_lines.append("# This file will be executed when you close the"
-                            " editor.")
-        script_lines.append("# Please double-check everything, clear the file"
-                            " to abort.")
-        new_dirs = []
-        for old, new in zip(filenames, new_filenames):
-            if old != new:
-                basepath, _ = os.path.split(new)
-                if (basepath is not None and basepath not in new_dirs
-                        and not os.path.isdir(basepath)):
-                    script_lines.append("mkdir -vp -- {dir}".format(
-                        dir=esc(basepath)))
-                    new_dirs.append(basepath)
-                script_lines.append("mv -vi -- {old} {new}".format(
-                    old=esc(old), new=esc(new)))
-        # Make sure not to forget the ending newline
-        script_content = "\n".join(script_lines) + "\n"
+        script_lines.append("# This file will be executed when you close the editor.\n")
+        script_lines.append("# Please double-check everything, clear the file to abort.\n")
+        script_lines.extend("mv -vi -- %s %s\n" % (esc(old), esc(new))
+                            for old, new in zip(filenames, new_filenames) if old != new)
+        script_content = "".join(script_lines)
         if py3:
             cmdfile.write(script_content.encode("utf-8"))
         else:
@@ -1343,7 +1220,7 @@ class copycmap(copymap):
 
 
 class copytmap(copymap):
-    """:copytmap <keys> <newkeys1> [<newkeys2>...]
+    """:copycmap <keys> <newkeys1> [<newkeys2>...]
 
     Copies a "taskview" keybinding from <keys> to <newkeys>
     """
@@ -1362,67 +1239,28 @@ class unmap(Command):
             self.fm.ui.keymaps.unbind(self.context, arg)
 
 
-class uncmap(unmap):
-    """:uncmap <keys> [<keys2>, ...]
-
-    Remove the given "console" mappings
-    """
-    context = 'console'
-
-
-class cunmap(uncmap):
+class cunmap(unmap):
     """:cunmap <keys> [<keys2>, ...]
 
     Remove the given "console" mappings
-
-    DEPRECATED in favor of uncmap.
     """
-
-    def execute(self):
-        self.fm.notify("cunmap is deprecated in favor of uncmap!")
-        super(cunmap, self).execute()
+    context = 'browser'
 
 
-class unpmap(unmap):
-    """:unpmap <keys> [<keys2>, ...]
+class punmap(unmap):
+    """:punmap <keys> [<keys2>, ...]
 
     Remove the given "pager" mappings
     """
     context = 'pager'
 
 
-class punmap(unpmap):
-    """:punmap <keys> [<keys2>, ...]
-
-    Remove the given "pager" mappings
-
-    DEPRECATED in favor of unpmap.
-    """
-
-    def execute(self):
-        self.fm.notify("punmap is deprecated in favor of unpmap!")
-        super(punmap, self).execute()
-
-
-class untmap(unmap):
-    """:untmap <keys> [<keys2>, ...]
+class tunmap(unmap):
+    """:tunmap <keys> [<keys2>, ...]
 
     Remove the given "taskview" mappings
     """
     context = 'taskview'
-
-
-class tunmap(untmap):
-    """:tunmap <keys> [<keys2>, ...]
-
-    Remove the given "taskview" mappings
-
-    DEPRECATED in favor of untmap.
-    """
-
-    def execute(self):
-        self.fm.notify("tunmap is deprecated in favor of untmap!")
-        super(tunmap, self).execute()
 
 
 class map_(Command):
@@ -1791,17 +1629,6 @@ class flat(Command):
         self.fm.thisdir.flat = level
         self.fm.thisdir.load_content()
 
-
-class reset_previews(Command):
-    """:reset_previews
-
-    Reset the file previews.
-    """
-    def execute(self):
-        self.fm.previews = {}
-        self.fm.ui.need_redraw = True
-
-
 # Version control commands
 # --------------------------------
 
@@ -1965,14 +1792,11 @@ class yank(Command):
                     ['xsel'],
                     ['xsel', '-b'],
                 ],
-                'wl-copy': [
-                    ['wl-copy'],
-                ],
                 'pbcopy': [
                     ['pbcopy'],
                 ],
             }
-            ordered_managers = ['pbcopy', 'wl-copy', 'xclip', 'xsel']
+            ordered_managers = ['pbcopy', 'xclip', 'xsel']
             executables = get_executables()
             for manager in ordered_managers:
                 if manager in executables:
