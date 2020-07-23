@@ -10,10 +10,11 @@
 from __future__ import (absolute_import, division, print_function)
 
 # You can import any python module as needed.
-import os
+import os, sys
 
 # You always need to import ranger.api.commands here to get the Command class:
 from ranger.api.commands import Command
+import re
 
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
@@ -62,17 +63,175 @@ class my_edit(Command):
         return self._tab_directory_content()
 
 
-class nautilus(Command):
-    """:nautilus
-
-    open current directory in nautilus, it it exists.
-    """
+class open_with(Command):
 
     def execute(self):
-        from ranger.ext.get_executables import get_executables
-        if 'nautilus' in get_executables():
-            self.fm.run('nautilus ' + self.fm.thisdir.path, flags='f')
-        elif 'xdg-open' in get_executables():
-            self.fm.run('xdg-open ' + self.fm.thisdir.path, flags='f')
+        app, flags, mode = self._get_app_flags_mode(self.rest(1))
+        files = self._get_files(self.rest(1))
+        if files:
+            self.fm.execute_file(
+                files = files,
+                app=app,
+                flags=flags,
+                mode=mode)
+
+    def tab(self, tabnum):
+        return self._tab_through_executables()
+
+    def _get_files(self, string):
+        """Extracts the application, flags, mode and files from a string.
+        the files should be passed after `--` double dash. if no file is passed,
+        uses self.fm.thistab.get_selection(). supports regex to match file name
+        in the current directory
+        the `./` before filename or regex is optional except when wanting to open
+        current directory
+        Note: if no filename is provided after `--`, all files in current directory
+        will be returned
+
+        examples:
+        If file_A, file_B are in curent tab
+
+        "xdg-open f 1 -- ./" => [self.fm.thisdir]
+        "mplayer f 1 -- " => [self.fm.thisdir.files] # all files in cwd
+        "editor f 1 -- file_A" => [file_A]
+        "editor f 1 -- ./file_A" => [file_A]
+        "xdg-open f 1 -- ./file.*" => [file_A, file_B] # regex with ./
+        "vim f 1 -- .*_.*" => [file_A, file_B] # regex without ./
+
+        fallback to old method when `--` not in string
+
+        "mplayer f 1" => [self.fm.thistab.get_selection()]
+        "atool 4" => [self.fm.thistab.get_selection()]
+        "p" => [self.fm.thistab.get_selection()]
+        "" => [self.fm.thistab.get_selection()]
+        """
+        if not "--" in string:
+            return [f for f in self.fm.thistab.get_selection()]
         else:
-            self.fm.notify("nautilus is not available.")
+            string = string.split("--")[-1].strip()
+            if string.startswith("./"):
+                if len(string) > 2:
+                    regex_str = string[2:]
+                else:
+                    return [self.fm.thisdir]
+            else:
+                regex_str = string
+            files =  [f for f in self.fm.thisdir.files
+                    if re.match(regex_str, f.basename)]
+            if files:
+                return files
+
+    def _get_app_flags_mode(self, string):  # pylint: disable=too-many-branches,too-many-statements
+        """Extracts the application, flags and mode from a string.
+
+        examples:
+        "xdg-open f 1 -- somefile" => ("xdg-open", "f", 1)
+        "mplayer f 1" => ("mplayer", "f", 1)
+        "atool 4" => ("atool", "", 4)
+        "p" => ("", "p", 0)
+        "" => None
+        """
+
+        app = ''
+        flags = ''
+        mode = 0
+        if '--' in string:
+            string = string.split('--')[0].strip()
+        split = string.split()
+
+        if len(split) == 1:
+            part = split[0]
+            if self._is_app(part):
+                app = part
+            elif self._is_flags(part):
+                flags = part
+            elif self._is_mode(part):
+                mode = part
+
+        elif len(split) == 2:
+            part0 = split[0]
+            part1 = split[1]
+
+            if self._is_app(part0):
+                app = part0
+                if self._is_flags(part1):
+                    flags = part1
+                elif self._is_mode(part1):
+                    mode = part1
+            elif self._is_flags(part0):
+                flags = part0
+                if self._is_mode(part1):
+                    mode = part1
+            elif self._is_mode(part0):
+                mode = part0
+                if self._is_flags(part1):
+                    flags = part1
+
+        elif len(split) >= 3:
+            part0 = split[0]
+            part1 = split[1]
+            part2 = split[2]
+
+            if self._is_app(part0):
+                app = part0
+                if self._is_flags(part1):
+                    flags = part1
+                    if self._is_mode(part2):
+                        mode = part2
+                elif self._is_mode(part1):
+                    mode = part1
+                    if self._is_flags(part2):
+                        flags = part2
+            elif self._is_flags(part0):
+                flags = part0
+                if self._is_mode(part1):
+                    mode = part1
+            elif self._is_mode(part0):
+                mode = part0
+                if self._is_flags(part1):
+                    flags = part1
+
+        return app, flags, int(mode)
+
+    def _is_app(self, arg):
+        return not self._is_flags(arg) and not arg.isdigit()
+
+    @staticmethod
+    def _is_flags(arg):
+        from ranger.core.runner import ALLOWED_FLAGS
+        return all(x in ALLOWED_FLAGS for x in arg)
+
+    @staticmethod
+    def _is_mode(arg):
+        return all(x in '0123456789' for x in arg)
+
+
+class fzf_select(Command):
+    """
+    :fzf_select
+
+    Find a file using fzf.
+
+    With a prefix argument select only directories.
+
+    See: https://github.com/junegunn/fzf
+    """
+    def execute(self):
+        import subprocess
+        import os.path
+        if self.quantifier:
+            # match only directories
+            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
+        else:
+            # match files and directories
+            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
+        fzf = self.fm.execute_command(command, universal_newlines=True, stdout=subprocess.PIPE)
+        stdout, stderr = fzf.communicate()
+        if fzf.returncode == 0:
+            fzf_file = os.path.abspath(stdout.rstrip('\n'))
+            if os.path.isdir(fzf_file):
+                self.fm.cd(fzf_file)
+            else:
+                self.fm.select_file(fzf_file)

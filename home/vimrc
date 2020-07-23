@@ -208,12 +208,6 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " Remove Highlight after escape in search mode
 "nnoremap <esc> :noh<return><esc>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
-map <c-space> ?
 
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
@@ -402,6 +396,7 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'vim-airline/vim-airline'
     Plugin 'preservim/nerdtree'
     Plugin 'cespare/vim-toml'
+    Plugin 'easymotion/vim-easymotion'
     call vundle#end()
 endif
 syntax on filetype plugin indent on
