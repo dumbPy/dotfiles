@@ -397,9 +397,13 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'preservim/nerdtree'
     Plugin 'cespare/vim-toml'
     Plugin 'easymotion/vim-easymotion'
+    Plugin 'jceb/vim-orgmode'
+    Plugin 'nathangrigg/vim-beancount'
     call vundle#end()
 endif
 syntax on filetype plugin indent on
+filetype plugin on
+filetype indent on
 
 "Adding Tags
 " set tags=/home/sufiyan/anaconda3/tags;,tags;
