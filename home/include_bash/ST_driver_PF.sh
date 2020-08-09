@@ -3,8 +3,8 @@
 
 st_generate_epf(){
     # rates
-    local rate_basic=404.23 # basic rate per day
-    local rate_ot=101.06 # ot charges per hour
+    local rate_basic=410.96 # basic rate per day
+    local rate_ot=102.67 # ot charges per hour
 
 
     local days=$1
