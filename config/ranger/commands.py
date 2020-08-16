@@ -235,3 +235,14 @@ class fzf_select(Command):
                 self.fm.cd(fzf_file)
             else:
                 self.fm.select_file(fzf_file)
+
+class code(Command):
+  """
+  :code
+  Opens current directory in VSCode
+  """
+
+  def execute(self):
+    dirname = self.fm.thisdir.path
+    codecmd = ["code", dirname]
+    self.fm.execute_command(codecmd)
