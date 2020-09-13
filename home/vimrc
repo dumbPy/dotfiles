@@ -401,6 +401,7 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'nathangrigg/vim-beancount'
     Plugin 'JamshedVesuna/vim-markdown-preview'
     Plugin 'ycm-core/YouCompleteMe'
+    Plugin 'chrisbra/csv.vim'
     call vundle#end()
 endif
 syntax on filetype plugin indent on

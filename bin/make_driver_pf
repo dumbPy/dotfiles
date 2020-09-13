@@ -1,0 +1,57 @@
+#! /usr/bin/env python
+
+import sys
+import datetime
+import subprocess
+
+# round off and then int
+ri = lambda x: int(round(x,0))
+
+rate_basic = 410.96
+rate_ot = 0.25*rate_basic
+
+
+days = int(sys.argv[1])
+ncp_days = 26-days
+ot = int(sys.argv[2])
+
+today = datetime.datetime.today()
+last_month = today - datetime.timedelta(days=30)
+
+# Basic Salary with 5% HRA
+basic = rate_basic*days
+hra = basic*0.05
+salary_basic = ri(rate_basic*days*1.05)
+
+
+# OT charges
+salary_ot = ri(rate_ot*ot)
+
+
+data = (f"101576210429#~#MANGESH RAGHUNATH LAD#~#"
+        f"{salary_basic+salary_ot}#~#"
+        f"{salary_basic}#~#{salary_basic}#~#{salary_basic}#~#"
+        f"{ri(salary_basic*0.12)}#~#"
+        f"{ri(salary_basic*0.0833)}#~#"
+        f"{ri(salary_basic*0.0367)}#~#"
+        f"{ncp_days}#~#0"
+       )
+
+filename = f"EPFO_{last_month:%b_%Y}.txt"
+
+subprocess.call(f'echo "{data}" > {filename}', shell=True)
+
+
+print(f"{'Basic':>10} {days:10} @ {rate_basic:10} = {basic}")
+print(f"{'HRA':>10} {  basic:10} @ {'5%':>10} = {hra}")
+print(f"{'-'*10:>47}")
+print(f"{'Total Basic = ':>37}{salary_basic}")
+print(f"{'OT':>10} {   ot:10} @ {rate_ot:10} = {salary_ot}")
+print(f"{'-'*10:>47}")
+print(f"{'Total = ':>37}{salary_basic+salary_ot}")
+
+
+
+
+
+
