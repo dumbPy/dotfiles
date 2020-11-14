@@ -22,3 +22,13 @@ def task_config():
             'targets': [f'/home/{USER}/.config/{file}'],
             'clean': [f'rm /home/{USER}/.config/{file}']
         }
+
+def task_bin():
+    "symlink all bin files into ~/.local/bin"
+    for file in os.listdir(f"{PWD}/bin"):
+        yield {
+            'name': file,
+            'actions': [f"ln -s {PWD}/bin/{file} /home/{USER}/.local/bin/{file}"],
+            'targets': [f'/home/{USER}/.local/bin/{file}'],
+            'clean': [f'rm /home/{USER}/.local/bin/{file}']
+        }
