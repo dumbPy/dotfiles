@@ -6,6 +6,7 @@ import subprocess
 
 # round off and then int
 ri = lambda x: int(round(x,0))
+r2 = lambda x: round(x,2)
 
 rate_basic = 410.96
 rate_ot = 0.25*rate_basic
@@ -19,21 +20,27 @@ today = datetime.datetime.today()
 last_month = today - datetime.timedelta(days=30)
 
 # Basic Salary with 5% HRA
-basic = rate_basic*days
-hra = basic*0.05
-salary_basic = ri(rate_basic*days*1.05)
+basic = r2(rate_basic*days)
+hra = r2(basic*0.05)
+salary_basic = r2(rate_basic*days*1.05)
 
 
 # OT charges
-salary_ot = ri(rate_ot*ot)
+salary_ot = r2(rate_ot*ot)
+
+# PF deduction
+pf = ri(0.12*basic)
+
+# ESIC deduction
+esic = ri(0.0075*(salary_basic+salary_ot))
 
 
 data = (f"101576210429#~#MANGESH RAGHUNATH LAD#~#"
-        f"{salary_basic+salary_ot}#~#"
-        f"{salary_basic}#~#{salary_basic}#~#{salary_basic}#~#"
-        f"{ri(salary_basic*0.12)}#~#"
-        f"{ri(salary_basic*0.0833)}#~#"
-        f"{ri(salary_basic*0.0367)}#~#"
+        f"{ri(salary_basic+salary_ot)}#~#"
+        f"{ri(basic)}#~#{ri(basic)}#~#{ri(basic)}#~#"
+        f"{ri(basic*0.12)}#~#"
+        f"{ri(basic*0.0833)}#~#"
+        f"{ri(basic*0.0367)}#~#"
         f"{ncp_days}#~#0"
        )
 
@@ -42,14 +49,23 @@ filename = f"EPFO_{last_month:%b_%Y}.txt"
 subprocess.call(f'echo "{data}" > {filename}', shell=True)
 
 
-print(f"{'Basic':>10} {days:10} @ {rate_basic:10} = {basic}")
-print(f"{'HRA':>10} {  basic:10} @ {'5%':>10} = {hra}")
-print(f"{'-'*10:>47}")
-print(f"{'Total Basic = ':>37}{salary_basic}")
-print(f"{'OT':>10} {   ot:10} @ {rate_ot:10} = {salary_ot}")
-print(f"{'-'*10:>47}")
-print(f"{'Total = ':>37}{salary_basic+salary_ot}")
-
+output = (
+        f"{'Basic':>10} {days:10} @ {rate_basic:10} = {basic}",
+        f"{'HRA':>10} {  basic:10} @ {'5%':>10} = {hra}",
+        f"{'-'*10:>47}",
+        f"{'Total Basic = ':>37}{salary_basic}",
+        f"{'OT':>10} {   ot:10} @ {rate_ot:10} = {salary_ot}",
+        f"{'-'*10:>47}",
+        f"{'Gross Salary = ':>37}{salary_basic+salary_ot}",
+        f"{'-'*10:>47}",
+        f"{'PF Contrib':>21} @ {'12 % = ':>13}{pf}",
+        f"{'ESIC Contrib':>21} @ {'0.75 % = ':>13}{esic}",
+        f"{'-'*10:>47}",
+        f"{'Net Salary = ':>37}{r2(salary_basic+salary_ot-pf-esic)}",
+)
+print("\n".join(output))
+with open("Salary_calculations.txt", "w") as f:
+        f.write("\n".join(output))
 
 
 
