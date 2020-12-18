@@ -1,9 +1,8 @@
-export PATH=/var/opt/anaconda3/bin:$USER/.local/bin:/var/opt/kitty/bin:$PATH
+# export PATH=/var/opt/anaconda3/bin:$USER/.local/bin:/var/opt/kitty/bin:$PATH
 alias google='python ~/bin/googler'
 alias escape_spaces="sed 's/ /\\\ /g'"
 alias ftp_up="sudo docker run -d -p 20-21:20-21 -p 65500-65515:65500-65515 --name ftp -v ~/applications/ftp:/var/ftp:ro metabrainz/docker-anon-ftp"
 alias ftp_down="sudo docker rm -f ftp"
-alias firefox="/var/opt/python2/firefox"
 
 alias sudo="sudo " # to enable sudo before alias
 
