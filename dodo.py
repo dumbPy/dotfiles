@@ -2,15 +2,16 @@ import os
 
 PWD = os.path.dirname(__file__) # dotfiles abs path
 USER = os.environ.get("USER") # username
+HOME = os.environ.get("HOME") # username
 
 def task_home():
     """deploy rc file as dotfiles in home"""
     for file in os.listdir(f"{PWD}/home"):
         yield {
             'name': file,
-            'actions': [f"ln -s {PWD}/home/{file} /home/{USER}/.{file}"],
-            'targets': [f'/home/{USER}/.{file}'],
-            'clean': [f'rm /home/{USER}/.{file}']
+            'actions': [f"ln -s {PWD}/home/{file} {HOME}/.{file}"],
+            'targets': [f'{HOME}/.{file}'],
+            'clean': [f'rm {HOME}/.{file}']
         }
 
 def task_config():
@@ -18,9 +19,9 @@ def task_config():
     for file in os.listdir(f"{PWD}/config"):
         yield {
             'name': file,
-            'actions': [f"ln -s {PWD}/config/{file} /home/{USER}/.config/{file}"],
-            'targets': [f'/home/{USER}/.config/{file}'],
-            'clean': [f'rm /home/{USER}/.config/{file}']
+            'actions': [f"ln -s {PWD}/config/{file} {HOME}/.config/{file}"],
+            'targets': [f'{HOME}/.config/{file}'],
+            'clean': [f'rm {HOME}/.config/{file}']
         }
 
 def task_bin():
@@ -28,7 +29,7 @@ def task_bin():
     for file in os.listdir(f"{PWD}/bin"):
         yield {
             'name': file,
-            'actions': [f"ln -s {PWD}/bin/{file} /home/{USER}/.local/bin/{file}"],
-            'targets': [f'/home/{USER}/.local/bin/{file}'],
-            'clean': [f'rm /home/{USER}/.local/bin/{file}']
+            'actions': [f"ln -s {PWD}/bin/{file} {HOME}/.local/bin/{file}"],
+            'targets': [f'{HOME}/.local/bin/{file}'],
+            'clean': [f'rm {HOME}/.local/bin/{file}']
         }
