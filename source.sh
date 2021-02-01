@@ -3,3 +3,4 @@ do source $f
 done
 
 export TERMINFO=/usr/share/terminfo/x
+export PATH=~/.local/bin:$PATH
