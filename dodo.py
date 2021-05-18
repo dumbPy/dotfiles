@@ -4,6 +4,8 @@ PWD = os.path.dirname(__file__) # dotfiles abs path
 USER = os.environ.get("USER") # username
 HOME = os.environ.get("HOME") # username
 
+DOIT_CONFIG = {'default_tasks': ['home', 'config', 'bin']}
+
 def task_home():
     """deploy rc file as dotfiles in home"""
     for file in os.listdir(f"{PWD}/home"):
@@ -33,3 +35,23 @@ def task_bin():
             'targets': [f'{HOME}/.local/bin/{file}'],
             'clean': [f'rm {HOME}/.local/bin/{file}']
         }
+
+def task_vim():
+    return {
+        'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
+                   f"{HOME}/.vim/bundle/Vundle.vim",
+                   "vim +PluginInstall +qall"],
+        'targets': [f"{HOME}/.vim/bundle/Vundle.vim"],
+        'file_dep': [f"{HOME}/.vimrc"],
+        'clean': [f'rm -rf {HOME}/.vim/bundle']
+    }
+
+def task_get_neovim_local():
+    return {
+            "targets": [f"{HOME}/.local/bin/nvim"],
+            "actions": [f'mkdir -p {HOME}/.local/bin',
+                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/stable/nvim.appimage',
+                        f'ln -s {HOME}/.local/bin/nvim {HOME}/.local/bin/vim',
+                        f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'],
+            "clean" : [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
+            }
