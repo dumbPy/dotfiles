@@ -396,12 +396,14 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'vim-airline/vim-airline'
     Plugin 'preservim/nerdtree'
     Plugin 'cespare/vim-toml'
+    Plugin 'stephpy/vim-yaml'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'jceb/vim-orgmode'
     Plugin 'nathangrigg/vim-beancount'
     Plugin 'JamshedVesuna/vim-markdown-preview'
     Plugin 'ycm-core/YouCompleteMe'
     Plugin 'chrisbra/csv.vim'
+    Plugin 'iamcco/markdown-preview.nvim'
     call vundle#end()
 endif
 syntax on filetype plugin indent on
