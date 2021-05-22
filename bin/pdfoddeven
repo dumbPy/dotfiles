@@ -1,0 +1,115 @@
+#!/usr/bin/python3
+
+"""
+A script that takes multiple pdfs and spits out 2 pdfs of even and odd pages, merged and aligned so you can print them without handling single pages.
+example:
+    $> pdfoddeven -i file1.pdf file2.pdf -o outputfile.pdf
+    this would generate `outputfile_even_pages.pdf` and `outputfile_odd_pages.pdf`
+
+    * If an input file has odd number of pages, an empty page is added to the odd_pages file
+    * --blank would add blank pages between odd/even pages of each file so they are easier to separate after printing.
+
+"""
+
+from argparse import ArgumentParser, FileType
+import subprocess
+import os
+from tempfile import TemporaryDirectory
+import re
+import glob
+
+def parse_args():
+    parser = ArgumentParser(description= "A tool to separate even and odd pages of multiple pdfs to help print on one sided printers.")
+    parser.add_argument("--blank", help="Leave empty pages between docs or easy separation", action='store_true')
+    parser.add_argument('-i',"--input_files", nargs="+", required=True)
+    parser.add_argument('-o', '--output', type=str, required=True)
+    args = parser.parse_args()
+    return args
+
+class FileHandler:
+    def __init__(self, path, tempdir=None):
+        self.validate(path)
+        self.path = path
+        self.basename = os.path.basename(os.path.splitext(self.path)[0])
+        if tempdir is not None:
+            self.tempdir = tempdir
+        else:
+            self.tempdir = TemporaryDirectory(self.basename)
+        self.extract_pages()
+    
+    def __del__(self):
+        try:
+            self.tempdir.cleanup()
+        except:
+            pass
+    
+    def validate(self, path):
+        if not os.path.exists(path):
+            ValueError("Input File does not exists:" + path)
+        if not path.endswith('pdf'):
+            ValueError("Input File extension should be .pdf :"+ path)
+    
+    def extract_pages(self):
+        if self.basename == "blank_page":
+            self.pages = [self.path]
+            return None
+        process = subprocess.run("pdfseparate "+ re.escape(self.path) +" "+ re.escape(os.path.join(self.tempdir.name, "%06d.pdf")), shell=True)
+        if process.returncode: # If process failed
+            print(process.stderr)
+            raise ValueError("PDF Pages Extraction Failed for "+re.escape(self.path))
+        self.pages = sorted(glob.glob(os.path.join(self.tempdir.name, '*.pdf')))
+
+def is_even(page_path):
+    num = os.path.basename(os.path.splitext(page_path)[0])
+    assert num.isnumeric(), "Page "+page_path + " not convertable to int"
+    return (int(num) % 2 == 0)
+    
+def get_blank_page_file():
+    """Create and return a temp file with 1 blank page
+    Used as a file separator in the merged files"""
+    blank_file_dir = TemporaryDirectory()
+    blank_file_path = os.path.join(blank_file_dir.name, "blank_page.pdf")
+    try:
+        subprocess.run("gs -sDEVICE=pdfwrite -o "+blank_file_path+" -g5950x8420", shell=True)
+    except:
+        blank_file_dir.cleanup()
+        raise ValueError("Blank page creation failed. Check if you have ghostscript `gs` installed")
+    return FileHandler(blank_file_path, blank_file_dir)
+
+def write_pages(pages, out_path):
+    process = subprocess.run("pdfunite "+" ".join([re.escape(page) for page in pages])+ " " + out_path, shell=True)
+    if process.returncode:
+        print(process.stderr)
+        raise ValueError("Page merge failed for: "+ "\n".join(pages))
+
+if __name__ == '__main__':
+    args = parse_args()
+    odd_pages = []
+    even_pages = []
+
+    blank_file = get_blank_page_file()
+    
+    input_files = [FileHandler(os.path.expanduser(input_file)) for input_file in args.input_files]
+    for input_file in input_files:
+        for page in input_file.pages:
+            if is_even(page):
+                even_pages.append(page)
+            else:
+                odd_pages.append(page)
+        
+        # If file has odd number of pages, add blank page to even_pages
+        if len(input_file.pages) % 2:
+            even_pages.append(blank_file.pages[0])
+        
+        # Add blank pages to odd and even pages if --blank
+        if args.blank:
+            even_pages.append(blank_file.pages[0])
+            odd_pages.append(blank_file.pages[0])
+    
+    # Write merged pages
+    write_pages(even_pages, os.path.splitext(args.output)[0]+"_even_pages.pdf")
+    write_pages(odd_pages, os.path.splitext(args.output)[0]+"_odd_pages.pdf")
+    pass
+    
+    
+
