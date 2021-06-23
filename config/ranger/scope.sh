@@ -76,12 +76,32 @@ handle_extension() {
             odt2txt "${FILE_PATH}" && exit 5
             exit 1;;
 
+        ## XLSX
+        xlsx)
+            ## Preview as csv conversion
+            ## Uses: https://github.com/dilshod/xlsx2csv
+            xlsx2csv -- "${FILE_PATH}" && exit 5
+            exit 1;;
+
         # HTML
         htm|html|xhtml)
             # Preview as text conversion
             w3m -dump "${FILE_PATH}" && exit 5
             lynx -dump -- "${FILE_PATH}" && exit 5
             elinks -dump "${FILE_PATH}" && exit 5
+            ;; # Continue with next handler on failure
+
+        ## JSON
+        json|ipynb)
+            jq --color-output . "${FILE_PATH}" && exit 5
+            python -m json.tool -- "${FILE_PATH}" && exit 5
+            ;;
+
+        ## Direct Stream Digital/Transfer (DSDIFF) and wavpack aren't detected
+        ## by file(1).
+        dff|dsf|wv|wvc)
+            mediainfo "${FILE_PATH}" && exit 5
+            exiftool "${FILE_PATH}" && exit 5
             ;; # Continue with next handler on failure
     esac
 }
