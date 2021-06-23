@@ -246,3 +246,16 @@ class code(Command):
     dirname = self.fm.thisdir.path
     codecmd = ["code", dirname]
     self.fm.execute_command(codecmd)
+
+class print(Command):
+    """
+    :print
+    prints the selected files with lp command using default printer.
+    make sure you set the default printer on cups ui on http://localhost:631/printers
+    """
+    def execute(self):
+        import subprocess
+        from ranger.ext.shell_escape import shell_escape as esc
+        selections = self.fm.thistab.get_selection()
+        paths = [esc(selection.path) for selection in selections]
+        subprocess.run("lp -s "+" ".join(paths), shell=True)
