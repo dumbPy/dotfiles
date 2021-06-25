@@ -40,9 +40,10 @@ def task_vim():
     return {
         'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
                    f"{HOME}/.vim/bundle/Vundle.vim",
-                   "vim +PluginInstall +qall"],
+                   "vim +PluginInstall +qall",
+                   "cd ~/.vim/bundle/YouCompleteMe && python3 install.py"
+                   ],
         'targets': [f"{HOME}/.vim/bundle/Vundle.vim"],
-        'file_dep': [f"{HOME}/.vimrc"],
         'clean': [f'rm -rf {HOME}/.vim/bundle']
     }
 
