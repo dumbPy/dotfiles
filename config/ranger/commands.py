@@ -249,8 +249,9 @@ class code(Command):
 
 class print(Command):
     """
-    :print
+    :print <options>
     prints the selected files with lp command using default printer.
+    supports options for lp command
     make sure you set the default printer on cups ui on http://localhost:631/printers
     """
     def execute(self):
@@ -258,4 +259,9 @@ class print(Command):
         from ranger.ext.shell_escape import shell_escape as esc
         selections = self.fm.thistab.get_selection()
         paths = [esc(selection.path) for selection in selections]
-        subprocess.run("lp -s "+" ".join(paths), shell=True)
+        subprocess.run("lp -s "+self.rest(1)+" -- "+" ".join(paths), shell=True)
+
+    def tab(self, tabnum):
+        options = ["-P"] # output page number. see `man lp` for more
+        return (self.start(1) + option for option in options)
+        
