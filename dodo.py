@@ -51,7 +51,7 @@ def task_get_neovim_local():
     return {
             "targets": [f"{HOME}/.local/bin/nvim"],
             "actions": [f'mkdir -p {HOME}/.local/bin',
-                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/stable/nvim.appimage',
+                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage',
                         f'ln -s {HOME}/.local/bin/nvim {HOME}/.local/bin/vim',
                         f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'],
             "clean" : [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
