@@ -13,3 +13,5 @@ dotfiles that go into my home dir.
 ### config
 dotfiles that go into `~/.config`
 
+### bin
+simple shell scripts that go into `~/.local/bin`
