@@ -56,3 +56,14 @@ def task_get_neovim_local():
                         f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'],
             "clean" : [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
             }
+
+def task_mojibar():
+    return {
+            "targets":[f"{HOME}/.local/bin/mojibar"]
+            "actions":[f"curl -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim/Mojibar-linux-x64.zip'",
+                       f"unzip {HOME}/.local/share/mojibar.zip -d {HOME}/.local/share",
+                       f"rm {HOME}/.local/share/mojibar.zip",
+                       f"ln -s {HOME}/.local/share/Mojibar-linux-x64/Mojibar {HOME}/.local/bin/mojibar"
+                ],
+            "clean": [f"rm -rf {HOME}/.local/share/Mojibar-linux-x64 {HOME}/.local/bin/mojibar"]
+        }
