@@ -8,7 +8,7 @@ import subprocess
 ri = lambda x: int(round(x,0))
 r2 = lambda x: round(x,2)
 
-rate_basic = 416.73
+rate_basic = 429.23
 rate_ot = 0.25*rate_basic
 
 
