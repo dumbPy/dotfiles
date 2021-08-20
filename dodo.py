@@ -36,7 +36,26 @@ def task_bin():
             'clean': [f'rm {HOME}/.local/bin/{file}']
         }
 
-def task_vim():
+def task_ranger():
+    """Install ranger and dragon for drag and drop from ranger"""
+    return {
+        'actions':[
+            f'pip3 install --user ranger-fm',
+            f'git clone https://github.com/mwh/dragon ~/.local/share/dragon',
+            f'cd ~/.local/share && make install',
+            f'rm -rf ~/.local/share/dragon'
+        ],
+        'targets':[
+            '~/.local/bin/ranger',
+            '~/.local/bin/dragon'
+            ],
+        'clean':[
+            'pip3 uninstall ranger-fm',
+            'rm -rf ~/.local/bin/dragon'
+        ]
+    }
+
+def task_vim_plugins():
     return {
         'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
                    f"{HOME}/.vim/bundle/Vundle.vim",
@@ -47,7 +66,7 @@ def task_vim():
         'clean': [f'rm -rf {HOME}/.vim/bundle']
     }
 
-def task_get_neovim_local():
+def task_neovim():
     return {
             "targets": [f"{HOME}/.local/bin/nvim"],
             "actions": [f'mkdir -p {HOME}/.local/bin',
