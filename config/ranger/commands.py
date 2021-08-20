@@ -264,4 +264,22 @@ class print(Command):
     def tab(self, tabnum):
         options = ["-P"] # output page number. see `man lp` for more
         return (self.start(1) + option for option in options)
-        
+
+class convert(Command):
+    def execute(self):
+        import subprocess
+        from ranger.ext.shell_escape import shell_escape as esc
+        selections = self.fm.thistab.get_selection()
+        paths = [esc(selection.path) for selection in selections]
+        dirname = self.fm.thisdir.path
+        extn = self.rest(1)
+        if not extn:
+            print("Need extension for conversion. eg. :convert pdf")
+            return None # need extension for conversion
+        output_path = os.path.join(dirname, "_\&_".join([os.path.splitext(os.path.basename(path))[0] for path in paths])+"."+extn)
+        subprocess.run("convert "+" ".join(paths)+" "+output_path, shell=True)
+
+    def tab(self, tabnum):
+        options = ["pdf"] # output page number. see `man lp` for more
+        return (self.start(1) + option for option in options)
+
