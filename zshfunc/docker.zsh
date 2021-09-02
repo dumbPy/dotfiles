@@ -8,6 +8,11 @@ docker run -ti --name spacemacs \
     -v /etc/localtime:/etc/localtime:ro \
     -v /etc/machine-id:/etc/machine-id:ro \
     -v /var/run/dbus:/var/run/dbus \
-    -v /home/sufiyan/curl/sara-backend:/mnt/workspace \
+    -v /home/sufiyan/workspace/tasks:/mnt/workspace \
     spacemacs/develop
+}
+
+# list compose projects running
+composelist(){
+    docker ps --filter "label=com.docker.compose.project" -q | xargs docker inspect --format='{{index .Config.Labels "com.docker.compose.project"}}'| sort | uniq
 }
