@@ -40,10 +40,10 @@ def task_ranger():
     """Install ranger and dragon for drag and drop from ranger"""
     return {
         'actions':[
-            f'pip3 install --user ranger-fm',
-            f'git clone https://github.com/mwh/dragon ~/.local/share/dragon',
-            f'cd ~/.local/share && make install',
-            f'rm -rf ~/.local/share/dragon'
+            'pip3 install --user ranger-fm',
+            'git clone https://github.com/mwh/dragon ~/.local/share/dragon',
+            'cd ~/.local/share && make install',
+            'rm -rf ~/.local/share/dragon'
         ],
         'targets':[
             '~/.local/bin/ranger',
@@ -56,6 +56,7 @@ def task_ranger():
     }
 
 def task_vim_plugins():
+    """Install Vim plugins and YouCompleteMe"""
     return {
         'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
                    f"{HOME}/.vim/bundle/Vundle.vim",
@@ -67,6 +68,7 @@ def task_vim_plugins():
     }
 
 def task_neovim():
+    """Fetch neovim"""
     return {
             "targets": [f"{HOME}/.local/bin/nvim"],
             "actions": [f'mkdir -p {HOME}/.local/bin',
@@ -77,12 +79,16 @@ def task_neovim():
             }
 
 def task_mojibar():
+    """Get Mojibar"""
     return {
             "targets":[f"{HOME}/.local/bin/mojibar"],
             "actions":[f"curl -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim/Mojibar-linux-x64.zip'",
                        f"unzip {HOME}/.local/share/mojibar.zip -d {HOME}/.local/share",
                        f"rm {HOME}/.local/share/mojibar.zip",
-                       f"ln -s {HOME}/.local/share/Mojibar-linux-x64/Mojibar {HOME}/.local/bin/mojibar"
+                       f"ln -s {HOME}/.local/share/Mojibar-linux-x64/Mojibar {HOME}/.local/bin/mojibar",
+                       "systemctl --user enable mojibar && systemctl --user start mojibar"
                 ],
-            "clean": [f"rm -rf {HOME}/.local/share/Mojibar-linux-x64 {HOME}/.local/bin/mojibar"]
+            "clean": [f"rm -rf {HOME}/.local/share/Mojibar-linux-x64 {HOME}/.local/bin/mojibar",
+                      "systemctl --user disable mojibar"
+                      ]
         }

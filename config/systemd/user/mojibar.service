@@ -1,0 +1,8 @@
+[Unit]
+Description=Start Mojibar as a service
+
+[Service]
+ExecStart=bash -c "mojibar"
+
+[Install]
+WantedBy=graphical.target
