@@ -6,3 +6,4 @@ config/nvim/.netrwhist
 
 # Ignore temp files of service
 graphical.target.wants
+*.wants
