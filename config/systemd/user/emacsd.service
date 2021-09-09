@@ -5,7 +5,8 @@ Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 [Service]
 Type=forking
 ExecStart=bash -c "emacs --daemon"
-# ExecStop=bash -c "emacsclient --eval \"(kill-emacs)\""
+ExecStop=bash -c "emacsclient --eval '(kill-emacs)'"
+RemainAfterExit=yes
 Environment=SSH_AUTH_SOCK=%t/keyring/ssh
 Restart=on-failure
 
