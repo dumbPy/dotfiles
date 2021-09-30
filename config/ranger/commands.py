@@ -15,6 +15,7 @@ import os, sys
 # You always need to import ranger.api.commands here to get the Command class:
 from ranger.api.commands import Command
 import re
+import shutil
 
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
@@ -283,3 +284,24 @@ class convert(Command):
         options = ["pdf"] # output page number. see `man lp` for more
         return (self.start(1) + option for option in options)
 
+class rmff(Command):
+    def execute(self):
+        import subprocess
+        from ranger.ext.shell_escape import shell_escape as esc
+        selections = self.fm.thistab.get_selection()
+        paths = [selection.path for selection in selections]
+        for path in paths:
+            shutil.move(path, path.replace(" ","_"))
+            subprocess.run("~/.local/bin/rmff "+path.replace(" ","_"), shell=True)
+
+class clean(Command):
+    def execute(self):
+        import subprocess
+        from ranger.ext.shell_escape import shell_escape as esc
+        selections = self.fm.thistab.get_selection()
+        paths = [selection.path for selection in selections]
+        for path in paths:
+            shutil.move(path, path.replace(" ","_"))
+
+        
+        
