@@ -21,4 +21,4 @@ then
             echo "usage: docker_mount_and_rm \<file or folder path\> [ --dry-run ]" && exit 1
     esac
 fi
-docker run --rm -v $(dirname $(readlink -f $1)):/workspace $IMAGE bash -c "rm -rf /workspace/$(basename $(readlink -f $1))"
+docker run --rm -d -v $(dirname $(readlink -f $1)):/workspace $IMAGE bash -c "rm -rf /workspace/$(basename $(readlink -f $1))"
