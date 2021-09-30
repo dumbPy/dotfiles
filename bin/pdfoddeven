@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 """
-A script that takes multiple pdfs and spits out 2 pdfs of even and odd pages, merged and aligned so you can print them without handling single pages.
+A script that takes multiple pdfs and spits out 2 pdfs of even and odd pages,
+merged and aligned so you can print them without handling single pages.
 example:
     $> pdfoddeven -i file1.pdf file2.pdf -o outputfile.pdf
     this would generate `outputfile_even_pages.pdf` and `outputfile_odd_pages.pdf`
@@ -11,7 +12,7 @@ example:
 
 """
 
-from argparse import ArgumentParser, FileType
+from argparse import ArgumentParser
 import subprocess
 import os
 from tempfile import TemporaryDirectory
@@ -61,7 +62,7 @@ class FileHandler:
 
 def is_even(page_path):
     num = os.path.basename(os.path.splitext(page_path)[0])
-    assert num.isnumeric(), "Page "+page_path + " not convertable to int"
+    assert num.isnumeric(), "Page "+ page_path + " not convertable to int"
     return (int(num) % 2 == 0)
     
 def get_blank_page_file():

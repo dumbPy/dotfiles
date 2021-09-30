@@ -19,11 +19,6 @@ packages = [
 ranger-fm
 ]
 
-[node-git]
-    [node.mojibar]
-    github = 'git@github.com:dumbPy/mojibar.git'
-    command = 'npm install'
-    
 [node]
 packages = [
 ]
