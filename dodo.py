@@ -82,7 +82,7 @@ def task_mojibar():
     """Get Mojibar"""
     return {
             "targets":[f"{HOME}/.local/bin/mojibar"],
-            "actions":[f"curl -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim/Mojibar-linux-x64.zip'",
+            "actions":[f"curl -L -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim/Mojibar-linux-x64.zip'",
                        f"unzip {HOME}/.local/share/mojibar.zip -d {HOME}/.local/share",
                        f"rm {HOME}/.local/share/mojibar.zip",
                        f"ln -s {HOME}/.local/share/Mojibar-linux-x64/Mojibar {HOME}/.local/bin/mojibar",
