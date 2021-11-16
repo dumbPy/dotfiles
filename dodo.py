@@ -89,6 +89,27 @@ def task_mojibar():
                        "systemctl --user enable mojibar && systemctl --user start mojibar"
                 ],
             "clean": [f"rm -rf {HOME}/.local/share/Mojibar-linux-x64 {HOME}/.local/bin/mojibar",
-                      "systemctl --user disable mojibar"
+                      "systemctl --user disable mojibar && systemctl --user disable mojibar"
+                      ]
+        }
+
+def task_rclone():
+    """Get Rclone and start the systemd service"""
+    return {
+            "targets":[f"{HOME}/.local/bin/rclone",
+                       f"{HOME}/.local/share/man/man1/rclone.1"
+                ],
+            "actions":[f"curl -L -o {HOME}/.local/share/rclone.zip 'https://downloads.rclone.org/rclone-current-linux-amd64.zip'",
+                       f"unzip {HOME}/.local/share/rclone.zip -d {HOME}/.local/share",
+                       f"rm {HOME}/.local/share/rclone.zip",
+                       f"mv {HOME}/.local/share/rclone-*-linux-amd64 {HOME}/.local/share/rclone",
+                       f"mv {HOME}/.local/share/rclone/rclone {HOME}/.local/bin/rclone",
+                       f"chmod +x {HOME}/.local/bin/rclone",
+                       f"mv {HOME}/.local/share/rclone/rclone.1 {HOME}/.local/share/man/man1/rclone.1",
+                       f"rm -rf {HOME}/.local/share/rclone",
+                       "systemctl --user enable rclone && systemctl --user start rclone"
+                ],
+            "clean": [f"rm {HOME}/.local/bin/rclone {HOME}/.local/share/man/man1/rclone.1",
+                      "systemctl --user stop rclone && systemctl --user disable rclone"
                       ]
         }
