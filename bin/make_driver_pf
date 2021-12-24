@@ -3,6 +3,7 @@
 import sys
 import datetime
 import subprocess
+from argparse import ArgumentParser
 
 # round off and then int
 ri = lambda x: int(round(x,0))
@@ -12,21 +13,23 @@ rate_basic = 429.23
 rate_ot = 0.25*rate_basic
 
 
-days = int(sys.argv[1])
-ncp_days = 26-days
-ot = int(sys.argv[2])
+parser = ArgumentParser()
+parser.add_argument("days", type=int)
+parser.add_argument("ot", type=float)
+args = parser.parse_args()
+ncp_days = 26-args.days
 
 today = datetime.datetime.today()
 last_month = today - datetime.timedelta(days=30)
 
 # Basic Salary with 5% HRA
-basic = r2(rate_basic*days)
+basic = r2(rate_basic*args.days)
 hra = r2(basic*0.05)
-salary_basic = r2(rate_basic*days*1.05)
+salary_basic = r2(rate_basic*args.days*1.05)
 
 
 # OT charges
-salary_ot = r2(rate_ot*ot)
+salary_ot = r2(rate_ot*args.ot)
 
 # PF deduction
 pf = ri(0.12*basic)
@@ -53,11 +56,11 @@ subprocess.call(f'echo "{data}" > {filename}', shell=True)
 
 
 output = (
-        f"{'Basic':>10} {days:10} @ {rate_basic:10} = {basic}",
+        f"{'Basic':>10} {args.days:10} @ {rate_basic:10} = {basic}",
         f"{'HRA':>10} {  basic:10} @ {'5%':>10} = {hra}",
         f"{'-'*10:>47}",
         f"{'Total Basic = ':>37}{salary_basic}",
-        f"{'OT':>10} {   ot:10} @ {rate_ot:10} = {salary_ot}",
+        f"{'OT':>10} {   args.ot:10} @ {rate_ot:10} = {salary_ot}",
         f"{'-'*10:>47}",
         f"{'Gross Salary = ':>37}{salary_basic+salary_ot}",
         f"{'-'*10:>47}",
