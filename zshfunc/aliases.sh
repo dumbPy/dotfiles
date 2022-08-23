@@ -11,3 +11,5 @@ alias ftp_down="sudo docker rm -f ftp"
 
 alias sudo="sudo " # to enable sudo before alias
 alias ec="emacsclient -c --a $EDITOR " # open in emacsclient gui if emacs daemon is running else open in default editor (vim)
+
+VIRGINIA_CPU_2="i-081cc25dd317cfd79"

@@ -40,7 +40,8 @@ set autoread
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ","
+" let mapleader = ","
+let mapleader = "\<Space>"
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -400,10 +401,11 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'easymotion/vim-easymotion'
     Plugin 'jceb/vim-orgmode'
     Plugin 'nathangrigg/vim-beancount'
-    Plugin 'JamshedVesuna/vim-markdown-preview'
     Plugin 'ycm-core/YouCompleteMe'
     Plugin 'chrisbra/csv.vim'
     Plugin 'iamcco/markdown-preview.nvim'
+    Plugin 'tpope/vim-commentary'
+    Plugin 'chrisbra/matchit'
     call vundle#end()
 endif
 syntax on filetype plugin indent on

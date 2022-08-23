@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 ri = lambda x: int(round(x,0))
 r2 = lambda x: round(x,2)
 
-rate_basic = 429.23
+rate_basic = 442.69
 rate_ot = 0.25*rate_basic
 
 
@@ -38,7 +38,7 @@ pf = ri(0.12*basic)
 esic = ri(0.0075*(salary_basic+salary_ot))
 
 # PT deduction
-pt = 200
+pt = 300 if last_month.month == 2 else 200
 
 
 data = (f"101576210429#~#MANGESH RAGHUNATH LAD#~#"
@@ -67,6 +67,8 @@ output = (
         f"{'PF Contrib':>21} @ {'12 % = ':>13}{pf}",
         f"{'ESIC Contrib':>21} @ {'0.75 % = ':>13}{esic}",
         f"{'Professional Tax':>34} = {pt}",
+        f"{'-'*10:>47}",
+        f"{'Net Deduction':>34} = {pf+esic+pt}",
         f"{'-'*10:>47}",
         f"{'Net Salary = ':>37}{r2(salary_basic+salary_ot-pf-esic-pt)}",
 )

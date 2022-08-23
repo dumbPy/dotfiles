@@ -82,7 +82,7 @@ def task_mojibar():
     """Get Mojibar"""
     return {
             "targets":[f"{HOME}/.local/bin/mojibar"],
-            "actions":[f"curl -L -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim/Mojibar-linux-x64.zip'",
+            "actions":[f"curl -L -o {HOME}/.local/share/mojibar.zip 'https://github.com/dumbPy/mojibar/releases/download/vim.and.currency/Mojibar-linux-x64.zip'",
                        f"unzip {HOME}/.local/share/mojibar.zip -d {HOME}/.local/share",
                        f"rm {HOME}/.local/share/mojibar.zip",
                        f"ln -s {HOME}/.local/share/Mojibar-linux-x64/Mojibar {HOME}/.local/bin/mojibar",
@@ -93,7 +93,23 @@ def task_mojibar():
                       ]
         }
 
-def task_rclone():
+def task_nvtop():
+    """Get NVTOP
+    requires libncurses5 to be preinstalled.
+    sudo apt install libncurses5-dev
+    """
+    return {
+            "targets":[f"{HOME}/.local/bin/nvtop"],
+            "actions":[f"git clone https://github.com/Syllo/nvtop.git {HOME}/.local/share/nvtop",
+                       f"mkdir -p {HOME}/.local/share/nvtop/build && cd {HOME}/.local/share/nvtop/build",
+                       f"cd {HOME}/.local/share/nvtop/build && cmake .. -DNVIDIA_SUPPORT=ON -DAMDGPU_SUPPORT=ON && make",
+                       f"ln -s {HOME}/.local/share/nvtop/build/src/nvtop {HOME}/.local/bin/nvtop"
+                ],
+            "clean": [f"rm -rf {HOME}/.local/share/nvtop {HOME}/.local/bin/nvtop",
+                      ]
+        }
+
+def task_beans():
     """Get Rclone and start the systemd service"""
     return {
             "targets":[f"{HOME}/.local/bin/rclone",

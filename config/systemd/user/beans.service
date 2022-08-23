@@ -1,0 +1,15 @@
+# Use https://github.com/astrada/google-drive-ocamlfuse/ to sync beans dir from google drive.
+# In order to create the config, run `google-drive-ocamlfuse` command and allow access to gdrive. Set beans dir folder ID as root_folder=1INfTSQhCaH2Ou1t-7NzEsjLly-cM8nt7 in ~/.gdfuse/default/config
+[Unit]
+Description=Google Drive beans
+AssertPathIsDirectory=~/beans
+
+[Service]
+Type=forking
+ExecStart=bash -c "google-drive-ocamlfuse ~/beans"
+ExecStop=/usr/bin/fusermount -u ~/beans
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
