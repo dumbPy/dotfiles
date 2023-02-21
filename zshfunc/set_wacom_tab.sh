@@ -1,6 +1,6 @@
 #!/bin/sh
 TABLET='HUION Huion Tablet_H640P Pad pad'
-if xsetwacom --list devices | grep -q $TABLET
+if (command -v xsetwacom) && (xsetwacom --list devices | grep -q $TABLET)
 then
     xsetwacom --set $TABLET Button 1 "key +ctrl +z -z -ctrl"
     xsetwacom --set $TABLET Button 2 "key e"
