@@ -401,7 +401,6 @@ if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
     Plugin 'easymotion/vim-easymotion'
     Plugin 'jceb/vim-orgmode'
     Plugin 'nathangrigg/vim-beancount'
-    Plugin 'ycm-core/YouCompleteMe'
     Plugin 'chrisbra/csv.vim'
     Plugin 'iamcco/markdown-preview.nvim'
     Plugin 'tpope/vim-commentary'

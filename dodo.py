@@ -56,12 +56,12 @@ def task_ranger():
     }
 
 def task_vim_plugins():
-    """Install Vim plugins and YouCompleteMe"""
+    """Install Vim plugins"""
     return {
-        'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
+        # 'actions':["git clone https://github.com/VundleVim/Vundle.vim.git "
+        'actions':["git clone https://github.com/mckellygit/Vundle.vim.git "
                    f"{HOME}/.vim/bundle/Vundle.vim",
                    "vim +PluginInstall +qall",
-                   "cd ~/.vim/bundle/YouCompleteMe && python3 install.py"
                    ],
         'targets': [f"{HOME}/.vim/bundle/Vundle.vim"],
         'clean': [f'rm -rf {HOME}/.vim/bundle']

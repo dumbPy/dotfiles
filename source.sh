@@ -2,9 +2,9 @@ for f in $(dirname $0)/zshfunc/*;
 do source $f
 done
 
-export TERMINFO=/usr/share/terminfo
-export PATH=~/.local/bin:$PATH
+# Add .local/bin to PATH
+[ -d ~/.local/bin ] && export PATH=~/.local/bin:$PATH
 
-intersection () {
-    comm -12 <(sort $1) <(sort $2)
-}
+
+# set nvim as default vim if available
+[[ -x $(command -v nvim) ]] && alias vim=nvim
