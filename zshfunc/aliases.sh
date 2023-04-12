@@ -2,7 +2,6 @@
 # user kitty as the default terminal
 # TERM="xterm-kitty"
 # TERM="xterm-256color"
-# use firefox as default browser
 BROWSER="brave-browser"
 EDITOR="vim"
 
@@ -12,4 +11,8 @@ alias ftp_down="sudo docker rm -f ftp"
 alias sudo="sudo " # to enable sudo before alias
 alias ec="emacsclient -c --a $EDITOR " # open in emacsclient gui if emacs daemon is running else open in default editor (vim)
 
-VIRGINIA_CPU_2="i-081cc25dd317cfd79"
+# set nvim as default vim if available
+[[ -x $(command -v nvim) ]] && alias vim=nvim
+
+# set nvim as default vim if available
+[[ -x $(command -v micromamba) ]] && alias conda=micromamba

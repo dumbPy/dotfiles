@@ -6,5 +6,3 @@ done
 [ -d ~/.local/bin ] && export PATH=~/.local/bin:$PATH
 
 
-# set nvim as default vim if available
-[[ -x $(command -v nvim) ]] && alias vim=nvim
