@@ -390,22 +390,27 @@ endfunction
 filetype off                  " required
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
-if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
-    call vundle#begin()
-    Plugin 'VundleVim/Vundle.vim'
-    Plugin 'timakro/vim-searchant'
-    Plugin 'vim-airline/vim-airline'
-    Plugin 'preservim/nerdtree'
-    Plugin 'cespare/vim-toml'
-    Plugin 'stephpy/vim-yaml'
-    Plugin 'easymotion/vim-easymotion'
-    Plugin 'jceb/vim-orgmode'
-    Plugin 'nathangrigg/vim-beancount'
-    Plugin 'chrisbra/csv.vim'
-    Plugin 'iamcco/markdown-preview.nvim'
-    Plugin 'tpope/vim-commentary'
-    Plugin 'chrisbra/matchit'
-    call vundle#end()
+if exists('g:vscode')
+    " VSCode extension
+else
+    " ordinary Neovim
+    if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
+        call vundle#begin()
+        Plugin 'VundleVim/Vundle.vim'
+        Plugin 'timakro/vim-searchant'
+        Plugin 'vim-airline/vim-airline'
+        Plugin 'preservim/nerdtree'
+        Plugin 'cespare/vim-toml'
+        Plugin 'stephpy/vim-yaml'
+        Plugin 'easymotion/vim-easymotion'
+        Plugin 'jceb/vim-orgmode'
+        Plugin 'nathangrigg/vim-beancount'
+        Plugin 'chrisbra/csv.vim'
+        Plugin 'iamcco/markdown-preview.nvim'
+        Plugin 'tpope/vim-commentary'
+        Plugin 'chrisbra/matchit'
+        call vundle#end()
+    endif
 endif
 syntax on filetype plugin indent on
 filetype plugin on
