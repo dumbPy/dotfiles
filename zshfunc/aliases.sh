@@ -5,6 +5,8 @@
 BROWSER="brave-browser"
 EDITOR="vim"
 
+export JUPTER_PORT='9999'
+
 alias ftp_up="sudo docker run -d -p 20-21:20-21 -p 65500-65515:65500-65515 --name ftp -v ~/applications/ftp:/var/ftp:ro metabrainz/docker-anon-ftp"
 alias ftp_down="sudo docker rm -f ftp"
 
