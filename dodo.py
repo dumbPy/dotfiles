@@ -1,8 +1,10 @@
 import os
+import platform
 
 PWD = os.path.dirname(__file__) # dotfiles abs path
 USER = os.environ.get("USER") # username
 HOME = os.environ.get("HOME") # username
+PLATFORM = platform.system() # platform name
 
 DOIT_CONFIG = {'default_tasks': ['home', 'config', 'bin']}
 
@@ -74,8 +76,18 @@ def task_neovim():
             "actions": [f'mkdir -p {HOME}/.local/bin',
                         f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage',
                         f'ln -s {HOME}/.local/bin/nvim {HOME}/.local/bin/vim',
-                        f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'],
-            "clean" : [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
+                        f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
+                        if PLATFORM == "Linux" else [
+                        f'mkdir -p {HOME}/.local/bin',
+                        f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz',
+                        f'tar -xzf {HOME}/.local/nvim.tar.gz -C {HOME}/.local/bin',
+                        f'rm {HOME}/.local/nvim.tar.gz',
+                        f'ln -s {HOME}/.local/bin/nvim-macos/bin/nvim {HOME}/.local/bin/nvim',
+                        f'ln -s {HOME}/.local/bin/nvim-macos/bin/nvim {HOME}/.local/bin/vim',
+                        ],
+            "clean" :   [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'] if PLATFORM == "Linux" else [
+                        f'rm -rf {HOME}/.local/bin/nvim-macos {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'
+                        ]
             }
 
 def task_mojibar():
