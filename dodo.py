@@ -1,10 +1,11 @@
 import os
 import platform
+from doit import task_params
 
 PWD = os.path.dirname(__file__) # dotfiles abs path
 USER = os.environ.get("USER") # username
 HOME = os.environ.get("HOME") # username
-PLATFORM = platform.system() # platform name
+PLATFORM = platform.system() # platform name 'Linux | Darwin'
 
 DOIT_CONFIG = {'default_tasks': ['home', 'config', 'bin']}
 
@@ -41,21 +42,31 @@ def task_bin():
 def task_ranger():
     """Install ranger and dragon for drag and drop from ranger"""
     return {
-        'actions':[
-            'pip3 install --user ranger-fm',
-            'git clone https://github.com/mwh/dragon ~/.local/share/dragon',
-            'cd ~/.local/share && make install',
-            'rm -rf ~/.local/share/dragon'
-        ],
+        'actions':(
+            [
+                'pip3 install --user ranger-fm'
+            ] +
+            [
+                'git clone https://github.com/mwh/dragon ~/.local/share/dragon',
+                'cd ~/.local/share && make install',
+                'rm -rf ~/.local/share/dragon'
+            ] if PLATFORM == "Linux" else [] +
+            [   'brew install cocoapods',
+                'cd /tmp/ && git clone https://github.com/Wevah/dragterm && cd /tmp/dragterm/dragterm && g++ DTDraggingSourceView.m main.m  -framework Cocoa -o drag',
+                'cp /tmp/dragterm/dragterm/drag ~/.local/bin/',
+                'rm -rf /tmp/dragterm'
+            ] if PLATFORM == 'Darwin' else []
+            ),
         'targets':[
             '~/.local/bin/ranger',
-            '~/.local/bin/dragon'
+            '~/.local/bin/dragon' if PLATFORM=='Linux' else '~/.local/bin/drag'
             ],
         'clean':[
             'pip3 uninstall ranger-fm',
-            'rm -rf ~/.local/bin/dragon'
+            'rm -f ~/.local/bin/dragon ~/.local/bin/drag'
         ]
     }
+
 
 def task_vim_plugins():
     """Install Vim plugins"""
@@ -69,24 +80,28 @@ def task_vim_plugins():
         'clean': [f'rm -rf {HOME}/.vim/bundle']
     }
 
-def task_neovim():
+@task_params([{ 'name': 'nightly', 'long':'nightly', 'type':bool, 'default':False}])
+def task_neovim(nightly:bool=False):
     """Fetch neovim"""
     return {
             "targets": [f"{HOME}/.local/bin/nvim"],
             "actions": [f'mkdir -p {HOME}/.local/bin',
-                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage',
+                        # f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage',
+                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/stable/nvim.appimage',
                         f'ln -s {HOME}/.local/bin/nvim {HOME}/.local/bin/vim',
                         f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
                         if PLATFORM == "Linux" else [
                         f'mkdir -p {HOME}/.local/bin',
-                        f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz',
+                        # f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz',
+                        f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/{"nightly" if nightly else "stable"}/nvim-macos-arm64.tar.gz',
                         f'tar -xzf {HOME}/.local/nvim.tar.gz -C {HOME}/.local/bin',
                         f'rm {HOME}/.local/nvim.tar.gz',
-                        f'ln -s {HOME}/.local/bin/nvim-macos/bin/nvim {HOME}/.local/bin/nvim',
-                        f'ln -s {HOME}/.local/bin/nvim-macos/bin/nvim {HOME}/.local/bin/vim',
+                        f'mv {HOME}/.local/bin/nvim-macos-arm64 {HOME}/.local/nvim',
+                        f'ln -s {HOME}/.local/nvim/bin/nvim {HOME}/.local/bin/nvim',
+                        f'ln -s {HOME}/.local/nvim/bin/nvim {HOME}/.local/bin/vim',
                         ],
             "clean" :   [f'rm {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'] if PLATFORM == "Linux" else [
-                        f'rm -rf {HOME}/.local/bin/nvim-macos {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'
+                        f'rm -rf {HOME}/.local/nvim {HOME}/.local/bin/nvim {HOME}/.local/bin/vim'
                         ]
             }
 
