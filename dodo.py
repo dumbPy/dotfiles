@@ -80,23 +80,25 @@ def task_vim_plugins():
         'clean': [f'rm -rf {HOME}/.vim/bundle']
     }
 
-@task_params([{ 'name': 'nightly', 'long':'nightly', 'type':bool, 'default':False}])
-def task_neovim(nightly:bool=False):
+@task_params([{ 'name': 'tag', 'long':'tag', 'type':str, 'default':'stable'}])
+def task_neovim(tag:str):
     """Fetch neovim"""
+    print(f"Fetching neovim {tag}")
     return {
             "targets": [f"{HOME}/.local/bin/nvim"],
             "actions": [f'mkdir -p {HOME}/.local/bin',
                         # f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage',
-                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/stable/nvim.appimage',
+                        f'curl -fLo {HOME}/.local/bin/nvim https://github.com/neovim/neovim/releases/download/{tag}/nvim.appimage',
                         f'ln -s {HOME}/.local/bin/nvim {HOME}/.local/bin/vim',
                         f'chmod +x {HOME}/.local/bin/nvim {HOME}/.local/bin/vim']
                         if PLATFORM == "Linux" else [
                         f'mkdir -p {HOME}/.local/bin',
                         # f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz',
-                        f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/{"nightly" if nightly else "stable"}/nvim-macos-arm64.tar.gz',
+                        # f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/{tag}/nvim-macos-arm64.tar.gz',
+                        f'curl -fLo {HOME}/.local/nvim.tar.gz https://github.com/neovim/neovim/releases/download/{tag}/nvim-macos.tar.gz',
                         f'tar -xzf {HOME}/.local/nvim.tar.gz -C {HOME}/.local/bin',
                         f'rm {HOME}/.local/nvim.tar.gz',
-                        f'mv {HOME}/.local/bin/nvim-macos-arm64 {HOME}/.local/nvim',
+                        f'mv {HOME}/.local/bin/nvim-macos* {HOME}/.local/nvim',
                         f'ln -s {HOME}/.local/nvim/bin/nvim {HOME}/.local/bin/nvim',
                         f'ln -s {HOME}/.local/nvim/bin/nvim {HOME}/.local/bin/vim',
                         ],

@@ -1,0 +1,9 @@
+[manager]
+
+prepend_keymap = [
+    # swap q and Q so hitting q quits while to cd to the dir use Q.
+    # works with https://yazi-rs.github.io/docs/quick-start
+	{ on = "Q",     run = "quit",               desc = "Quit the process" },
+	{ on = "q",     run = "quit --no-cwd-file", desc = "Quit the process without outputting cwd-file" },
+    { on = ["g","f"], run = 'search_do --via=fd --args="-d 5"', desc = "Switch to the flat view with a max depth of 3" }
+]

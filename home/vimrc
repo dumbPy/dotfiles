@@ -392,11 +392,19 @@ filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 if exists('g:vscode')
     " VSCode extension
+    if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
+        call vundle#begin()
+        Plugin 'VundleVim/Vundle.vim'
+        Plugin 'hadronized/hop.nvim'
+        call vundle#end()
+    endif
+    
 else
     " ordinary Neovim
     if isdirectory(expand('~/.vim/bundle/Vundle.vim'))
         call vundle#begin()
         Plugin 'VundleVim/Vundle.vim'
+        Plugin 'hadronized/hop.nvim'
         Plugin 'timakro/vim-searchant'
         Plugin 'vim-airline/vim-airline'
         Plugin 'preservim/nerdtree'
